@@ -1,0 +1,11 @@
+sequenceDiagram
+    participant browser
+    participant server
+
+	browser->>server: POST: https://studies.cs.helsinki.fi/exampleapp/spa
+
+    Note right of browser: JS from https://studies.cs.helsinki.fi/exampleapp/spa.js will handle the form submission
+    Note right of browser: The note is added to the notes array
+    Note right of browser: The value of the input is reset to an empty string
+    Note right of browser: The redrawNotes() function will update the page without a refresh
+    Note right of browser: The note is sent to the server
