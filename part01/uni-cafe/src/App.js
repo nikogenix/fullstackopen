@@ -7,13 +7,18 @@ const Button = ({ handleClick, text }) => {
 	return <button onClick={handleClick}>{text}</button>;
 };
 const Stats = ({ stats }) => {
-	return (
-		<div>
-			<div>good: {stats[0]}</div>
-			<div>neutral: {stats[1]}</div>
-			<div>bad: {stats[2]}</div>
-		</div>
-	);
+	if (stats.reduce((acc, c) => acc + c, 0) === 0) return <div>no feedback given</div>;
+	else
+		return (
+			<div>
+				<div>good: {stats[0]}</div>
+				<div>neutral: {stats[1]}</div>
+				<div>bad: {stats[2]}</div>
+				<div>all: {stats.reduce((acc, c) => acc + c, 0)}</div>
+				<div>average: {(stats[0] * 1 + stats[2] * -1) / stats.reduce((acc, c) => acc + c, 0) || 0}</div>
+				<div>positive: {(stats[0] / stats.reduce((acc, c) => acc + c, 0)) * 100 || 0} %</div>
+			</div>
+		);
 };
 
 const App = () => {
