@@ -10,15 +10,32 @@ const Stats = ({ stats }) => {
 	if (stats.reduce((acc, c) => acc + c, 0) === 0) return <div>no feedback given</div>;
 	else
 		return (
-			<div>
-				<div>good: {stats[0]}</div>
-				<div>neutral: {stats[1]}</div>
-				<div>bad: {stats[2]}</div>
-				<div>all: {stats.reduce((acc, c) => acc + c, 0)}</div>
-				<div>average: {(stats[0] * 1 + stats[2] * -1) / stats.reduce((acc, c) => acc + c, 0) || 0}</div>
-				<div>positive: {(stats[0] / stats.reduce((acc, c) => acc + c, 0)) * 100 || 0} %</div>
-			</div>
+			<table>
+				<tbody>
+					<StatLine text={"good"} value={stats[0]} />
+					<StatLine text={"neutral"} value={stats[1]} />
+					<StatLine text={"bad"} value={stats[2]} />
+					<StatLine text={"all"} value={stats.reduce((acc, c) => acc + c, 0)} />
+					<StatLine
+						text={"average"}
+						value={(stats[0] * 1 + stats[2] * -1) / stats.reduce((acc, c) => acc + c, 0)}
+					/>
+					<StatLine
+						text={"positive"}
+						value={`${(stats[0] / stats.reduce((acc, c) => acc + c, 0)) * 100} %`}
+					/>
+				</tbody>
+			</table>
 		);
+};
+
+const StatLine = ({ text, value }) => {
+	return (
+		<tr>
+			<td>{text}</td>
+			<td>{value}</td>
+		</tr>
+	);
 };
 
 const App = () => {
