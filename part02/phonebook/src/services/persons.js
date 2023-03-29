@@ -5,4 +5,8 @@ const getAll = () => axios.get(mainUrl);
 
 const create = (newObj) => axios.post(mainUrl, newObj);
 
-export default { getAll, create };
+const deletePerson = (id) => axios.delete(`${mainUrl}/${id}`);
+
+const editPerson = (id, newObj) => axios.put(`${mainUrl}/${id}`, newObj);
+
+export default { getAll, create, deletePerson, editPerson };

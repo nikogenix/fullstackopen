@@ -21,20 +21,26 @@ const Form = ({ addPerson, newName, handleNameChange, newNumber, handleNumberCha
 	</form>
 );
 
-const Numbers = ({ persons, filter }) => (
+const Numbers = ({ persons, filter, handleDelete }) => (
 	<ul>
 		{persons
 			.filter((person) => filter === "" || person.name.toLowerCase().includes(filter.toLowerCase()))
 			.map((person) => (
-				<Number key={person.name} person={person} />
+				<Number key={person.name} person={person} handleDelete={handleDelete} />
 			))}
 	</ul>
 );
 
-const Number = ({ person }) => (
+const Number = ({ person, handleDelete }) => (
 	<li>
-		{person.name}: {person.number}
+		{person.name}: {person.number} <DeleteButton id={person.id} handleDelete={handleDelete} />
 	</li>
+);
+
+const DeleteButton = ({ id, handleDelete }) => (
+	<button id={id} onClick={handleDelete}>
+		delete
+	</button>
 );
 
 const App = () => {
@@ -49,9 +55,19 @@ const App = () => {
 
 	const addPerson = (e) => {
 		e.preventDefault();
-		if (persons.filter((person) => person.name === newName).length)
-			alert(`Phonebook already contains '${newName}'`);
-		else if (persons.filter((person) => person.name === newNumber).length) {
+		if (persons.filter((person) => person.name === newName).length) {
+			if (
+				window.confirm(
+					`Phonebook already contains '${newName}'. Would you like to replace the old number with a new one?`
+				)
+			) {
+				const person = persons.find((p) => p.name === newName);
+				const newPerson = { ...person, number: newNumber };
+				personsService
+					.editPerson(person.id, newPerson)
+					.then(() => setPersons(persons.map((p) => (p.name === newName ? newPerson : p))));
+			}
+		} else if (persons.filter((person) => person.number === newNumber).length) {
 			alert(`Phonebook already contains '${newNumber}'`);
 		} else {
 			const personObj = { name: newName, number: newNumber };
@@ -76,6 +92,14 @@ const App = () => {
 		setFilter(e.target.value);
 	};
 
+	const handleDelete = (e) => {
+		if (window.confirm(`Delete '${persons[e.target.id - 1].name}' from phonebook?`)) {
+			personsService
+				.deletePerson(e.target.id)
+				.then(() => setPersons(persons.filter((c, i) => i !== e.target.id - 1)));
+		}
+	};
+
 	return (
 		<div>
 			<h1>Phonebook</h1>
@@ -90,7 +114,7 @@ const App = () => {
 			<h2>Search by name</h2>
 			<Filter filter={filter} handleFilterChange={handleFilterChange} />
 			<h2>Numbers</h2>
-			<Numbers persons={persons} filter={filter} />
+			<Numbers persons={persons} filter={filter} handleDelete={handleDelete} />
 		</div>
 	);
 };
