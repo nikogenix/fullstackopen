@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import personsService from "./services/persons";
+import "./index.css";
 
 const Filter = ({ filter, handleFilterChange }) => (
 	<div>
@@ -33,21 +34,30 @@ const Numbers = ({ persons, filter, handleDelete }) => (
 
 const Number = ({ person, handleDelete }) => (
 	<li>
-		{person.name}: {person.number} <DeleteButton id={person.id} handleDelete={handleDelete} />
+		{person.name}: {person.number} <DeleteButton name={person.name} handleDelete={handleDelete} />
 	</li>
 );
 
-const DeleteButton = ({ id, handleDelete }) => (
-	<button id={id} onClick={handleDelete}>
+const DeleteButton = ({ name, handleDelete }) => (
+	<button name={name} onClick={handleDelete}>
 		delete
 	</button>
 );
+
+const Notification = ({ message, error }) => {
+	if (message === null) {
+		return null;
+	}
+
+	return <span className={error ? "error" : "notification"}>{message}</span>;
+};
 
 const App = () => {
 	const [persons, setPersons] = useState([]);
 	const [newName, setNewName] = useState("");
 	const [newNumber, setNewNumber] = useState("");
 	const [filter, setFilter] = useState("");
+	const [notification, setNotification] = useState([null, false]); // notification message; error: true/false
 
 	useEffect(() => {
 		personsService.getAll().then((res) => setPersons(res.data));
@@ -65,18 +75,42 @@ const App = () => {
 				const newPerson = { ...person, number: newNumber };
 				personsService
 					.editPerson(person.id, newPerson)
-					.then(() => setPersons(persons.map((p) => (p.name === newName ? newPerson : p))));
+					.then(() => setPersons(persons.map((p) => (p.name === newName ? newPerson : p))))
+					.then(() => {
+						setNotification([`Modified '${newPerson.name}'`, false]);
+						setTimeout(() => {
+							setNotification([null, false]);
+						}, 5000);
+					})
+					.catch((err) => {
+						const status = err.response.status;
+						console.log(err);
+						if (status === 404) {
+							personsService.getAll().then((res) => setPersons(res.data));
+							setNotification([`The entry for '${newPerson.name}' has already been removed`, true]);
+							setTimeout(() => {
+								setNotification([null, false]);
+							}, 5000);
+						}
+					});
 			}
 		} else if (persons.filter((person) => person.number === newNumber).length) {
 			alert(`Phonebook already contains '${newNumber}'`);
 		} else {
 			const personObj = { name: newName, number: newNumber };
-
-			personsService.create(personObj).then((res) => {
-				setPersons(persons.concat(personObj));
-				setNewName("");
-				setNewNumber("");
-			});
+			personsService
+				.create(personObj)
+				.then((res) => {
+					setPersons(persons.concat(res.data));
+					setNewName("");
+					setNewNumber("");
+				})
+				.then(() => {
+					setNotification([`Added ${personObj.name}`, false]);
+					setTimeout(() => {
+						setNotification([null, false]);
+					}, 5000);
+				});
 		}
 	};
 
@@ -93,16 +127,24 @@ const App = () => {
 	};
 
 	const handleDelete = (e) => {
-		if (window.confirm(`Delete '${persons[e.target.id - 1].name}' from phonebook?`)) {
+		const person = persons.find((p) => p.name === e.target.name);
+		if (window.confirm(`Delete '${person.name}' from phonebook?`)) {
 			personsService
-				.deletePerson(e.target.id)
-				.then(() => setPersons(persons.filter((c, i) => i !== e.target.id - 1)));
+				.deletePerson(person.id)
+				.then(() => setPersons(persons.filter((p) => p.id !== person.id)))
+				.then(() => {
+					setNotification([`Deleted ${person.name}`, false]);
+					setTimeout(() => {
+						setNotification([null, false]);
+					}, 5000);
+				});
 		}
 	};
 
 	return (
 		<div>
 			<h1>Phonebook</h1>
+			<Notification message={notification[0]} error={notification[1]} />
 			<h2>Add someone new</h2>
 			<Form
 				addPerson={addPerson}
