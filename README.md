@@ -15,4 +15,8 @@ Open [localhost:3000](http://localhost:3000) to view it in your browser.
 
 The page will reload when you make changes.
 
+For projects with a DB, such as the Phonebook project, you will have to start the DB server first:
+
+`npm run server`
+
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
