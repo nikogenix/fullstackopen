@@ -92,7 +92,7 @@ const App = () => {
 							}, 5000);
 						} else if (status === 400) {
 							setNotification([
-								`Number must have 2 or 3 digits, then a dash (-), followed by 3 or more digits`,
+								`Number must contain at least 8 characters (2-3 digits, a dash (-), followed by more digits)`,
 								true,
 							]);
 							setTimeout(() => {
@@ -120,7 +120,7 @@ const App = () => {
 				})
 				.catch((err) => {
 					setNotification([
-						`Name must contain at least 3 characters. Number must have 2 or 3 digits, then a dash (-), followed by 3 or more digits`,
+						`Name must contain at least 3 characters. Number must contain at least 8 characters (2-3 digits, a dash (-), followed by more digits)`,
 						true,
 					]);
 					setTimeout(() => {
