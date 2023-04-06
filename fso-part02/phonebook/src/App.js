@@ -84,10 +84,17 @@ const App = () => {
 					})
 					.catch((err) => {
 						const status = err.response.status;
-						console.log(err);
 						if (status === 404) {
 							personsService.getAll().then((res) => setPersons(res.data));
 							setNotification([`The entry for '${newPerson.name}' has already been removed`, true]);
+							setTimeout(() => {
+								setNotification([null, false]);
+							}, 5000);
+						} else if (status === 400) {
+							setNotification([
+								`Number must have 2 or 3 digits, then a dash (-), followed by 3 or more digits`,
+								true,
+							]);
 							setTimeout(() => {
 								setNotification([null, false]);
 							}, 5000);
@@ -110,6 +117,16 @@ const App = () => {
 					setTimeout(() => {
 						setNotification([null, false]);
 					}, 5000);
+				})
+				.catch((err) => {
+					setNotification([
+						`Name must contain at least 3 characters. Number must have 2 or 3 digits, then a dash (-), followed by 3 or more digits`,
+						true,
+					]);
+					setTimeout(() => {
+						setNotification([null, false]);
+					}, 7000);
+					console.log(err.response.data.err);
 				});
 		}
 	};
