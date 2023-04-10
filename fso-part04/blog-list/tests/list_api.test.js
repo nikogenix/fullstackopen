@@ -84,27 +84,46 @@ test("when no amount of likes are defined, the blog will have 0 by default", asy
 });
 
 test("when no title/author/url is defined, the blog will not be added", async () => {
-	const newBlog1 = {
+	const newBlog = {
 		likes: 5,
 	};
 
-	// const newBlog2 = {
-	// 	author: "lkjhg",
-	// };
-
-	// const newBlog3 = {
-	// 	url: "www.mnbvc.com",
-	// };
-
-	await api.post("/api/blogs").send(newBlog1).expect(400);
-
-	// await api.post("/api/blogs").send(newBlog2).expect(400);
-
-	// await api.post("/api/blogs").send(newBlog3).expect(400);
+	await api.post("/api/blogs").send(newBlog).expect(400);
 
 	const blogsAtEnd = await helper.blogsInDb();
 
 	expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length);
+});
+
+test("deleting works", async () => {
+	const blogs = await helper.blogsInDb();
+	const deleteId = blogs[0].id;
+
+	await api.delete(`/api/blogs/${deleteId}`).expect(204);
+
+	const blogsAtEnd = await helper.blogsInDb();
+
+	expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length - 1);
+});
+
+test("updating works", async () => {
+	const blogs = await helper.blogsInDb();
+	const updateId = blogs[1].id;
+	const newBlog = {
+		title: "qwerty",
+		author: "asdfgh",
+		url: "www.zxcvbn.com",
+		likes: 11,
+	};
+
+	await api.put(`/api/blogs/${updateId}`).send(newBlog).expect(204);
+
+	const updatedBlogs = await helper.blogsInDb();
+
+	const updatedBlog = updatedBlogs.find((b) => b.title === "qwerty");
+
+	expect(updatedBlogs).toHaveLength(helper.initialBlogs.length);
+	expect(updatedBlog.likes).toBe(11);
 });
 
 afterAll(async () => {
