@@ -7,3 +7,27 @@ content-type: application/json
     "url": "www.xyz.com",
     "likes": 0
 }
+
+###
+
+POST http://localhost:3003/api/blogs/ HTTP/1.1
+content-type: application/json
+
+{
+    "title": "hey",
+    "author": "6434a9cdf2002d24b37fdb66",
+    "url": "www.xyz.com",
+    "likes": 0
+}
+
+###
+
+POST http://localhost:3003/api/blogs/ HTTP/1.1
+content-type: application/json
+
+{
+    "title": "test",
+    "author": "6434a9cdf2002d24b37fdb66",
+    "url": "www.abc.com",
+    "likes": 0
+}
