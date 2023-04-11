@@ -32,7 +32,7 @@ content-type: application/json
     "likes": 0
 }
 
-###
+### new post with token
 
 POST http://localhost:3003/api/blogs/ HTTP/1.1
 content-type: application/json
@@ -44,3 +44,15 @@ authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im5pa
     "url": "www.abc.com",
     "likes": 0
 }
+
+### delete post with token
+
+DELETE http://localhost:3003/api/blogs/6434bcafbbc1e890988758c8 HTTP/1.1
+content-type: application/json
+authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im5pa29nZW5peCIsImlkIjoiNjQzNGE5Y2RmMjAwMmQyNGIzN2ZkYjY2IiwiaWF0IjoxNjgxMTc1MTI3fQ.aAy4_dvOq4ninxkSpXVIURVGFX_8zqQXDVE0sUV9jyM
+
+### delete post with wrong token
+
+DELETE http://localhost:3003/api/blogs/6434b917827b6d0074aef470 HTTP/1.1
+content-type: application/json
+authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJvb3QiLCJpZCI6IjY0MzRhOWNiZjIwMDJkMjRiMzdmZGI2NCIsImlhdCI6MTY4MTE3Nzk1MSwiZXhwIjoxNjgxMjY0MzUxfQ.z_Ws7s3xCfBv2BDsTdHgR1bqMeKWuihQL8QkqKGBqb0
