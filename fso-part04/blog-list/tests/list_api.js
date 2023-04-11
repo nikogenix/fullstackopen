@@ -4,13 +4,11 @@ const User = require("../models/user");
 const initialBlogs = [
 	{
 		title: "abc",
-		author: "def",
 		url: "www.ghi.com",
 		likes: 0,
 	},
 	{
 		title: "qwerty",
-		author: "asdfgh",
 		url: "www.zxcvbn.com",
 		likes: 10,
 	},
