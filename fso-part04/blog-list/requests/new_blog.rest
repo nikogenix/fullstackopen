@@ -31,3 +31,16 @@ content-type: application/json
     "url": "www.abc.com",
     "likes": 0
 }
+
+###
+
+POST http://localhost:3003/api/blogs/ HTTP/1.1
+content-type: application/json
+authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im5pa29nZW5peCIsImlkIjoiNjQzNGE5Y2RmMjAwMmQyNGIzN2ZkYjY2IiwiaWF0IjoxNjgxMTc1MTI3fQ.aAy4_dvOq4ninxkSpXVIURVGFX_8zqQXDVE0sUV9jyM
+
+{
+    "title": "test",
+    "author": "6434a9cdf2002d24b37fdb66",
+    "url": "www.abc.com",
+    "likes": 0
+}

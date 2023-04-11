@@ -17,3 +17,45 @@ content-type: application/json
     "name": "niko",
     "password": "password"
 }
+
+### short username
+
+POST http://localhost:3003/api/users/ HTTP/1.1
+content-type: application/json
+
+{
+    "username": "no",
+    "name": "niko",
+    "password": "password"
+}
+
+### short password
+
+POST http://localhost:3003/api/users/ HTTP/1.1
+content-type: application/json
+
+{
+    "username": "niko",
+    "name": "niko",
+    "password": "no"
+}
+
+### no username
+
+POST http://localhost:3003/api/users/ HTTP/1.1
+content-type: application/json
+
+{
+    "name": "niko",
+    "password": "password"
+}
+
+### no password
+
+POST http://localhost:3003/api/users/ HTTP/1.1
+content-type: application/json
+
+{
+    "username": "hellothere",
+    "name": "niko"
+}
