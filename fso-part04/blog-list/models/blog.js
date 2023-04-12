@@ -6,14 +6,18 @@ const blogSchema = new mongoose.Schema({
 		required: true,
 	},
 	author: {
-		type: mongoose.Schema.Types.ObjectId,
-		ref: "User",
+		type: String,
+		required: true,
 	},
 	url: {
 		type: String,
 		required: true,
 	},
 	likes: Number,
+	user: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "User",
+	},
 });
 
 blogSchema.set("toJSON", {

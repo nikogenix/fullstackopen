@@ -22,9 +22,9 @@ describe("testing user and blog actions", () => {
 		let user2 = new User({ username: "root2", name: "admin2", passwordHash });
 		await user2.save();
 
-		let b1 = new Blog({ ...helper.initialBlogs[0], author: user1.id });
+		let b1 = new Blog({ ...helper.initialBlogs[0], user: user1.id });
 		await b1.save();
-		let b2 = new Blog({ ...helper.initialBlogs[1], author: user2.id });
+		let b2 = new Blog({ ...helper.initialBlogs[1], user: user2.id });
 		await b2.save();
 
 		const response = await api.post("/api/login").send({
@@ -71,7 +71,7 @@ describe("testing user and blog actions", () => {
 			.expect(400)
 			.expect("Content-Type", /application\/json/);
 
-		expect(result.body.error).toContain("username must be unique");
+		expect(result.body.error).toContain("expected `username` to be unique");
 
 		const usersAtEnd = await helper.usersInDb();
 		expect(usersAtEnd).toEqual(usersAtStart);
@@ -102,10 +102,9 @@ describe("testing user and blog actions", () => {
 	});
 
 	test("a valid new blog can be added", async () => {
-		const user = await User.findOne({ username: "root1" });
 		const newBlog = {
 			title: "test",
-			author: user.id,
+			author: "me",
 			url: "https://www.test.com",
 			likes: 0,
 		};
