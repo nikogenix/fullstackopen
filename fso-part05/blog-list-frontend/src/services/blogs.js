@@ -20,7 +20,19 @@ const getAll = () => {
 
 const create = async (newObject) => {
 	const response = await axios.post(baseUrl, newObject);
-	return response.data;
+	const fullObject = await axios.get(`${baseUrl}/${response.data.id}`);
+	return fullObject.data;
 };
 
-export default { getAll, create };
+const addLike = async (id, newObject) => {
+	await axios.put(`${baseUrl}/${id}`, newObject);
+	const fullObject = await axios.get(`${baseUrl}/${id}`);
+	return fullObject.data;
+};
+
+const remove = async (id) => {
+	const response = await axios.delete(`${baseUrl}/${id}`);
+	return response;
+};
+
+export default { getAll, create, addLike, remove }; // eslint-disable-line
