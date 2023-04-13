@@ -9,6 +9,11 @@ blogsRouter.get("/", async (request, response) => {
 	response.json(blogs);
 });
 
+blogsRouter.get("/:id", async (request, response) => {
+	const blog = await Blog.findById(request.params.id).populate("user", { username: 1, name: 1 });
+	response.json(blog);
+});
+
 blogsRouter.post("/", userExtractor, async (request, response) => {
 	const user = request.user;
 	if (!user) {
@@ -49,9 +54,10 @@ blogsRouter.delete("/:id", userExtractor, async (request, response) => {
 });
 
 blogsRouter.put("/:id", async (request, response) => {
-	const { title, url, author, likes } = request.body;
+	const { user, title, url, author, likes } = request.body;
 
 	const blog = {
+		user,
 		title,
 		url,
 		author,
