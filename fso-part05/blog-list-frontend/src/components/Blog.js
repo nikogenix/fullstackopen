@@ -68,21 +68,29 @@ const Blog = ({ blog, blogs, setBlogs, setNotification }) => {
 		</>
 	);
 
-	const detailedListItem = () => (
-		<>
-			<p>
-				<a href={blog.url}>{blog.title}</a> written by {blog.author} <button onClick={handleClick}>hide</button>
-			</p>
-			<p>url: {blog.url}</p>
-			<p>
-				likes: {blog.likes} <button onClick={handleLike}>👍🏻</button>
-			</p>
-			<p>submitted by: {blog.user.name}</p>
-			<button onClick={handleDelete} style={{ margin: 5 }}>
-				remove
-			</button>
-		</>
-	);
+	const detailedListItem = () => {
+		const loggedUser = JSON.parse(window.localStorage.getItem("blogAppUser"));
+		const submittedByUser = loggedUser.username === blog.user.username;
+
+		return (
+			<>
+				<p>
+					<a href={blog.url}>{blog.title}</a> written by {blog.author}{" "}
+					<button onClick={handleClick}>hide</button>
+				</p>
+				<p>url: {blog.url}</p>
+				<p>
+					likes: {blog.likes} <button onClick={handleLike}>👍🏻</button>
+				</p>
+				<p>submitted by: {blog.user.name}</p>
+				{submittedByUser && (
+					<button onClick={handleDelete} style={{ margin: 5 }}>
+						remove
+					</button>
+				)}
+			</>
+		);
+	};
 
 	return (
 		<div style={blogStyle}>
