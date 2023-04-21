@@ -1,19 +1,24 @@
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import { getAnecdotes, voteAnecdote } from "./requests";
+import { useNotificationDispatch } from "./NotificationContext";
 
 import AnecdoteForm from "./components/AnecdoteForm";
 import Notification from "./components/Notification";
 
 const App = () => {
 	const queryClient = useQueryClient();
+	const notificationDispatch = useNotificationDispatch();
 
 	const newAnecdoteMutation = useMutation(voteAnecdote, {
 		onSuccess: (votedAnecdote) => {
-			const anecdotes = queryClient.getQueryData("anecdotes");
 			queryClient.setQueryData(
 				"anecdotes",
-				anecdotes.map((a) => (a.id === voteAnecdote.id ? { ...a, votes: ++a.votes } : a))
+				anecdotes.map((a) => (a.id === votedAnecdote.id ? votedAnecdote : a))
 			);
+			notificationDispatch({ type: "SET", payload: `successfully voted "${votedAnecdote.content}"` });
+			setTimeout(() => {
+				notificationDispatch({ type: "REMOVE" });
+			}, 5000);
 		},
 	});
 
