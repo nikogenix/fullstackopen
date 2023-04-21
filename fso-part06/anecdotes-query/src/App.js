@@ -1,40 +1,48 @@
-import AnecdoteForm from './components/AnecdoteForm'
-import Notification from './components/Notification'
+import { useQuery, useMutation, useQueryClient } from "react-query";
+import { getAnecdotes, voteAnecdote } from "./requests";
+
+import AnecdoteForm from "./components/AnecdoteForm";
+import Notification from "./components/Notification";
 
 const App = () => {
+	const queryClient = useQueryClient();
 
-  const handleVote = (anecdote) => {
-    console.log('vote')
-  }
+	const newAnecdoteMutation = useMutation(voteAnecdote, {
+		onSuccess: () => {
+			queryClient.invalidateQueries("anecdotes");
+		},
+	});
 
-  const anecdotes = [
-    {
-      "content": "If it hurts, do it more often",
-      "id": "47145",
-      "votes": 0
-    },
-  ]
+	const handleVote = (anecdote) => {
+		newAnecdoteMutation.mutate({ ...anecdote, votes: ++anecdote.votes });
+	};
 
-  return (
-    <div>
-      <h3>Anecdote app</h3>
-    
-      <Notification />
-      <AnecdoteForm />
-    
-      {anecdotes.map(anecdote =>
-        <div key={anecdote.id}>
-          <div>
-            {anecdote.content}
-          </div>
-          <div>
-            has {anecdote.votes}
-            <button onClick={() => handleVote(anecdote)}>vote</button>
-          </div>
-        </div>
-      )}
-    </div>
-  )
-}
+	const result = useQuery("anecdotes", getAnecdotes);
 
-export default App
+	if (result.isLoading) return <div>loading data...</div>;
+
+	if (result.isError) return <div>service not available due to server issues</div>;
+
+	const anecdotes = result.data;
+
+	return (
+		<div>
+			<h3>Anecdote app</h3>
+
+			<Notification />
+			<AnecdoteForm />
+
+			{anecdotes.map((anecdote) => (
+				<div key={anecdote.id}>
+					<div>{anecdote.content}</div>
+					<div>
+						has {anecdote.votes}
+						<button onClick={() => handleVote(anecdote)}>vote</button>
+					</div>
+				</div>
+			))}
+		</div>
+	);
+};
+
+export default App;
