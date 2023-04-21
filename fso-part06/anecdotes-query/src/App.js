@@ -8,8 +8,12 @@ const App = () => {
 	const queryClient = useQueryClient();
 
 	const newAnecdoteMutation = useMutation(voteAnecdote, {
-		onSuccess: () => {
-			queryClient.invalidateQueries("anecdotes");
+		onSuccess: (votedAnecdote) => {
+			const anecdotes = queryClient.getQueryData("anecdotes");
+			queryClient.setQueryData(
+				"anecdotes",
+				anecdotes.map((a) => (a.id === voteAnecdote.id ? { ...a, votes: ++a.votes } : a))
+			);
 		},
 	});
 
@@ -17,7 +21,9 @@ const App = () => {
 		newAnecdoteMutation.mutate({ ...anecdote, votes: ++anecdote.votes });
 	};
 
-	const result = useQuery("anecdotes", getAnecdotes);
+	const result = useQuery("anecdotes", getAnecdotes, {
+		refetchOnWindowFocus: false,
+	});
 
 	if (result.isLoading) return <div>loading data...</div>;
 
