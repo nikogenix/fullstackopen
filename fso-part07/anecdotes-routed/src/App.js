@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Routes, Route, Link, useMatch, useNavigate } from "react-router-dom";
-import { useField } from "./hooks/index";
+import { useField, useReset } from "./hooks/index";
 
 const Menu = () => {
 	const [anecdotes, setAnecdotes] = useState([
@@ -139,6 +139,7 @@ const CreateNew = ({ addNew }) => {
 	const content = useField("content");
 	const author = useField("author");
 	const info = useField("info");
+	const { reset } = useReset(content, author, info);
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
@@ -151,11 +152,6 @@ const CreateNew = ({ addNew }) => {
 		navigate("/");
 	};
 
-	const handleReset = () => {
-		content.reset();
-		author.reset();
-		info.reset();
-	};
 	return (
 		<div>
 			<h2>create a new anecdote</h2>
@@ -173,7 +169,7 @@ const CreateNew = ({ addNew }) => {
 					<input {...info} />
 				</div>
 				<button type="submit">create</button>
-				<button type="reset" onClick={handleReset}>
+				<button type="reset" onClick={reset}>
 					reset
 				</button>
 			</form>

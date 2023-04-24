@@ -7,14 +7,16 @@ export const useField = (name) => {
 		setValue(event.target.value);
 	};
 
-	const reset = () => {
-		setValue("");
-	};
-
 	return {
 		name,
 		value,
 		onChange,
-		reset,
 	};
+};
+
+export const useReset = (...args) => {
+	const fields = [...args];
+	const event = { target: { value: "" } };
+	const reset = () => fields.forEach((field) => field.onChange(event));
+	return { reset };
 };
