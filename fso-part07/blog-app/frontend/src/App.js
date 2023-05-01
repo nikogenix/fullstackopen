@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import Blog from "./components/Blog";
-import blogService from "./services/blogs";
 import loginService from "./services/login";
 import storageService from "./services/storage";
 
@@ -11,7 +10,7 @@ import Togglable from "./components/Togglable";
 
 import { useSelector, useDispatch } from "react-redux";
 import { setNotification } from "./reducers/notificationReducer";
-import { initialiseBlogs, createNewBlog } from "./reducers/blogReducer";
+import { initialiseBlogs, createNewBlog, addLike, deleteBlog } from "./reducers/blogReducer";
 
 import "./index.css";
 
@@ -53,24 +52,22 @@ const App = () => {
 	};
 
 	const createBlog = async (newBlog) => {
-		notifyWith(`A new blog '${newBlog.title}' by '${newBlog.author}' added`);
 		dispatch(createNewBlog(newBlog));
 		blogFormRef.current.toggleVisibility();
+		notifyWith(`A new blog '${newBlog.title}' by '${newBlog.author}' added`);
 	};
 
 	const like = async (blog) => {
-		//const blogToUpdate = { ...blog, likes: blog.likes + 1, user: blog.user.id };
-		//const updatedBlog = await blogService.update(blogToUpdate);
+		const blogToUpdate = { ...blog, likes: blog.likes + 1, user: blog.user.id };
+		dispatch(addLike(blogToUpdate));
 		notifyWith(`A like for the blog '${blog.title}' by '${blog.author}'`);
-		//setBlogs(blogs.map((b) => (b.id === blog.id ? updatedBlog : b)));
 	};
 
 	const remove = async (blog) => {
 		const ok = window.confirm(`Sure you want to remove '${blog.title}' by ${blog.author}`);
 		if (ok) {
-			await blogService.remove(blog.id);
+			dispatch(deleteBlog(blog));
 			notifyWith(`The blog' ${blog.title}' by '${blog.author} removed`);
-			//setBlogs(blogs.filter((b) => b.id !== blog.id));
 		}
 	};
 
