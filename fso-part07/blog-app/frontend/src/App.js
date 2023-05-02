@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useContext } from "react";
+import { useEffect, useRef, useContext } from "react";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 
 import Blog from "./components/Blog";
@@ -13,31 +13,45 @@ import Togglable from "./components/Togglable";
 
 import "./index.css";
 import NotificationContext from "./NotificationContext";
+import UserContext from "./UserContext";
 
 const App = () => {
 	const queryClient = useQueryClient();
 
-	const [user, setUser] = useState("");
+	const [user, userDispatch] = useContext(UserContext);
 	const [notification, dispatch] = useContext(NotificationContext);
 
 	const blogFormRef = useRef();
 
 	useEffect(() => {
 		const user = storageService.loadUser();
-		setUser(user);
+		userDispatch({ type: "SET", payload: { ...user } });
 	}, []);
 
-	const resultBlogs = useQuery("blogs", blogService.getAll);
-
-	if (resultBlogs.isLoading) {
-		return <div>loading data...</div>;
-	}
-
-	const blogs = resultBlogs.data;
+	const resultBlogs = useQuery("blogs", blogService.getAll, { refetchOnWindowFocus: false });
 
 	const newBlogMutation = useMutation(blogService.create, {
-		onSuccess: () => {
+		onSuccess: (newBlog) => {
+			const blogs = queryClient.getQueryData("blogs");
+			const updatedBlogs = [...blogs, newBlog];
+			queryClient.setQueryData("blogs", updatedBlogs);
+		},
+	});
+
+	const updateBlogMutation = useMutation(blogService.update, {
+		onSuccess: (updatedBlog) => {
+			const blogs = queryClient.getQueryData("blogs");
+			const updatedBlogs = blogs.map((b) => (b.id === updatedBlog.id ? updatedBlog : b));
+			queryClient.setQueryData("blogs", updatedBlogs);
+		},
+	});
+
+	const removeBlogMutation = useMutation(blogService.remove, {
+		onSuccess: (id) => {
 			queryClient.invalidateQueries("blogs");
+			const blogs = queryClient.getQueryData("blogs");
+			const updatedBlogs = blogs.filter((b) => b.id !== id);
+			queryClient.setQueryData("blogs", updatedBlogs);
 		},
 	});
 
@@ -52,7 +66,7 @@ const App = () => {
 	const login = async (username, password) => {
 		try {
 			const user = await loginService.login({ username, password });
-			setUser(user);
+			userDispatch({ type: "SET", payload: { ...user } });
 			storageService.saveUser(user);
 			notifyWith("welcome!");
 		} catch (e) {
@@ -61,34 +75,38 @@ const App = () => {
 	};
 
 	const logout = async () => {
-		setUser(null);
+		userDispatch({ type: "REMOVE" });
 		storageService.removeUser();
 		notifyWith("logged out");
 	};
 
-	const createBlog = async (newBlog) => {
+	const createBlog = (newBlog) => {
 		newBlogMutation.mutate(newBlog);
 		notifyWith(`A new blog '${newBlog.title}' by '${newBlog.author}' added`);
 		blogFormRef.current.toggleVisibility();
 	};
 
-	const like = async (blog) => {
+	const like = (blog) => {
 		const blogToUpdate = { ...blog, likes: blog.likes + 1, user: blog.user.id };
-		const updatedBlog = await blogService.update(blogToUpdate);
+		updateBlogMutation.mutate(blogToUpdate);
 		notifyWith(`A like for the blog '${blog.title}' by '${blog.author}'`);
-		// eslint-disable-next-line no-undef
-		setBlogs(blogs.map((b) => (b.id === blog.id ? updatedBlog : b)));
 	};
 
 	const remove = async (blog) => {
 		const ok = window.confirm(`Sure you want to remove '${blog.title}' by ${blog.author}`);
 		if (ok) {
-			await blogService.remove(blog.id);
+			removeBlogMutation.mutate(blog.id);
 			notifyWith(`The blog' ${blog.title}' by '${blog.author} removed`);
-			// eslint-disable-next-line no-undef
-			setBlogs(blogs.filter((b) => b.id !== blog.id));
 		}
 	};
+
+	if (resultBlogs.isLoading) {
+		return <div>loading data...</div>;
+	}
+
+	if (resultBlogs.isError) return <div>service not available due to server issues</div>;
+
+	const blogs = resultBlogs.data;
 
 	if (!user) {
 		return (
@@ -119,7 +137,7 @@ const App = () => {
 						key={blog.id}
 						blog={blog}
 						like={() => like(blog)}
-						canRemove={user && blog.user.username === user.username}
+						canRemove={user && blog.user?.username === user.username}
 						remove={() => remove(blog)}
 					/>
 				))}
