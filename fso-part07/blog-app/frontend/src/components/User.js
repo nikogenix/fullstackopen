@@ -1,7 +1,11 @@
-const User = ({ name, blogCount }) => {
+import { Link } from "react-router-dom";
+
+const User = ({ name, blogCount, userId }) => {
 	return (
 		<tr>
-			<td>{name}</td>
+			<td>
+				<Link to={`/users/${userId}`}>{name}</Link>
+			</td>
 			<td>{blogCount}</td>
 		</tr>
 	);

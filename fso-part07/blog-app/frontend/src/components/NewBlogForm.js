@@ -45,7 +45,7 @@ const NewBlogForm = ({ onCreate }) => {
 						placeholder="url of the blog"
 					/>
 				</div>
-				<button id="create-butto" type="submit">
+				<button id="create-button" type="submit">
 					create
 				</button>
 			</form>

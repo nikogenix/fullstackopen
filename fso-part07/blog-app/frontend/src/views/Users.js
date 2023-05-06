@@ -17,7 +17,7 @@ const UsersView = ({ users }) => {
 				</thead>
 				<tbody>
 					{users.map((user) => (
-						<User key={user.id} name={user.name} blogCount={user.blogs.length} />
+						<User key={user.id} userId={user.id} name={user.name} blogCount={user.blogs.length} />
 					))}
 				</tbody>
 			</table>

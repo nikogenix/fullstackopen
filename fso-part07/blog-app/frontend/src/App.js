@@ -46,7 +46,7 @@ const App = () => {
 
 	useEffect(() => {
 		const user = storageService.loadUser();
-		dispatch(setUser(user));
+		if (user) dispatch(setUser(user));
 		setUserDataLoaded(true);
 	}, []);
 
@@ -57,6 +57,8 @@ const App = () => {
 	useEffect(() => {
 		dispatch(initialiseUsers());
 	}, []);
+
+	const navigate = useNavigate();
 
 	const notifyWith = (message, type = "info", time = 3) => {
 		dispatch(setNotification(message, type, time));
@@ -80,24 +82,44 @@ const App = () => {
 	};
 
 	const createBlog = async (newBlog) => {
-		dispatch(createNewBlog(newBlog));
-		blogFormRef.current.toggleVisibility();
-		notifyWith(`A new blog '${newBlog.title}' by '${newBlog.author}' added`);
+		try {
+			await dispatch(createNewBlog(newBlog));
+			blogFormRef.current.toggleVisibility();
+			notifyWith(`a new blog '${newBlog.title}' by '${newBlog.author}' added`);
+			navigate("/blogs");
+		} catch (e) {
+			notifyWith("blog submission failed. make sure to fill in all the fields", "error");
+		}
 	};
 
 	const like = async (blog) => {
-		const blogToUpdate = { ...blog, likes: blog.likes + 1, user: blog.user.id };
-		dispatch(addLike(blogToUpdate));
-		notifyWith(`A like for the blog '${blog.title}' by '${blog.author}'`);
+		try {
+			const blogToUpdate = { ...blog, likes: blog.likes + 1, user: blog.user.id };
+			await dispatch(addLike(blogToUpdate));
+			notifyWith(`A like for the blog '${blog.title}' by '${blog.author}'`);
+		} catch (e) {
+			notifyWith("adding a like failed. blog might be removed. please refresh and try again", "error");
+		}
 	};
 
 	const remove = async (blog) => {
-		const ok = window.confirm(`Sure you want to remove '${blog.title}' by ${blog.author}`);
-		if (ok) {
-			dispatch(deleteBlog(blog));
-			notifyWith(`The blog' ${blog.title}' by '${blog.author} removed`);
+		try {
+			const ok = window.confirm(`Sure you want to remove '${blog.title}' by ${blog.author}`);
+			if (ok) {
+				await dispatch(deleteBlog(blog));
+				notifyWith(`The blog' ${blog.title}' by '${blog.author} removed`);
+				navigate("/blogs");
+			}
+		} catch (e) {
+			notifyWith("blog deletion failed. blog might already be removed. please refresh and try again", "error");
 		}
 	};
+
+	const userMatch = useMatch("/users/:id");
+	const userData = users.find((user) => user.id === userMatch?.params?.id) ?? null;
+
+	const blogMatch = useMatch("/blogs/:id");
+	const blogData = blogs.find((blog) => blog.id === blogMatch?.params?.id) ?? null;
 
 	if (!userDataLoaded) {
 		return <div>loading user data...</div>;
@@ -105,7 +127,7 @@ const App = () => {
 
 	return (
 		<div>
-			<div>
+			<nav>
 				<Link to="/blogs">blogs</Link>
 				<Link to="/users"> users</Link>
 				{user ? (
@@ -115,10 +137,22 @@ const App = () => {
 				) : (
 					<Link to="/login">login</Link>
 				)}
-			</div>
+			</nav>
+
 			<Notification info={notification} />
+
 			<Routes>
-				<Route path="/blogs/:id" element={<BlogView />} />
+				<Route
+					path="/blogs/:id"
+					element={
+						<BlogView
+							blog={blogData}
+							like={() => like(blogData)}
+							canRemove={user && blogData?.user?.username === user?.username}
+							remove={() => remove(blogData)}
+						/>
+					}
+				/>
 				<Route
 					path="/blogs"
 					element={
@@ -132,11 +166,15 @@ const App = () => {
 						/>
 					}
 				/>
+				<Route
+					path="/users/:id"
+					element={user ? <UserView user={userData} /> : <Navigate replace to="/login" />}
+				/>
 				<Route path="/users" element={user ? <UsersView users={users} /> : <Navigate replace to="/login" />} />
-				<Route path="/users/:id" element={user ? <UsersView /> : <Navigate replace to="/login" />} />
 				<Route path="/login" element={<LoginView login={login} />} />
+				<Route path="/" element={<Navigate replace to="/blogs" />} />
 			</Routes>
-			<footer>Blog app | 2023 </footer>
+			<footer>blog app | 2023 </footer>
 		</div>
 	);
 };
