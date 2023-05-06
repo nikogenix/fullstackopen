@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
-import blogService from "../services/blogs";
+import blogsService from "../services/blogs";
 
-const blogSlice = createSlice({
+const blogsSlice = createSlice({
 	name: "blogs",
 	initialState: [],
 	reducers: {
@@ -26,7 +26,7 @@ const blogSlice = createSlice({
 
 export const initialiseBlogs = () => {
 	return async (dispatch) => {
-		const blogs = await blogService.getAll();
+		const blogs = await blogsService.getAll();
 		dispatch(setBlogs(blogs));
 		dispatch(sort());
 	};
@@ -34,14 +34,14 @@ export const initialiseBlogs = () => {
 
 export const createNewBlog = (content) => {
 	return async (dispatch) => {
-		const newBlog = await blogService.create(content);
+		const newBlog = await blogsService.create(content);
 		dispatch(addBlog(newBlog));
 	};
 };
 
 export const addLike = (content) => {
 	return async (dispatch) => {
-		await blogService.update(content);
+		await blogsService.update(content);
 		dispatch(likeBlog(content));
 		dispatch(sort());
 	};
@@ -49,10 +49,10 @@ export const addLike = (content) => {
 
 export const deleteBlog = (content) => {
 	return async (dispatch) => {
-		await blogService.remove(content.id);
+		await blogsService.remove(content.id);
 		dispatch(removeBlog(content));
 	};
 };
 
-export const { setBlogs, addBlog, sort, likeBlog, removeBlog } = blogSlice.actions;
-export default blogSlice.reducer;
+export const { setBlogs, addBlog, sort, likeBlog, removeBlog } = blogsSlice.actions;
+export default blogsSlice.reducer;

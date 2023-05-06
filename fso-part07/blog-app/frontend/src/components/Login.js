@@ -1,12 +1,16 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const LoginForm = ({ login }) => {
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 
+	const navigate = useNavigate();
+
 	const handleSubmit = async (event) => {
 		event.preventDefault();
 		await login(username, password);
+		navigate("/blogs");
 	};
 
 	return (
