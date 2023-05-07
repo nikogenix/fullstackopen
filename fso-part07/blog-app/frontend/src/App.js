@@ -1,19 +1,11 @@
 /* eslint-disable */
 
 import { useEffect, useRef, useState } from "react";
-import {
-	BrowserRouter as Router,
-	Routes,
-	Route,
-	Link,
-	Navigate,
-	useParams,
-	useNavigate,
-	useMatch,
-} from "react-router-dom";
+import { Routes, Route, Link, Navigate, useNavigate, useMatch } from "react-router-dom";
 
 import loginService from "./services/login";
 import storageService from "./services/storage";
+import commentsService from "./services/comments";
 
 import UserView from "./views/User";
 import UsersView from "./views/Users";
@@ -21,11 +13,7 @@ import BlogView from "./views/Blog";
 import BlogsView from "./views/Blogs";
 import LoginView from "./views/Login";
 
-import Blog from "./components/Blog";
-import LoginForm from "./components/Login";
-import NewBlog from "./components/NewBlog";
 import Notification from "./components/Notification";
-import Togglable from "./components/Togglable";
 
 import { useSelector, useDispatch } from "react-redux";
 import { setNotification } from "./reducers/notificationReducer";
@@ -115,11 +103,35 @@ const App = () => {
 		}
 	};
 
+	const addComment = async (blogId, comment) => {
+		try {
+			const request = await commentsService.create(blogId, comment);
+			notifyWith(`comment added`);
+			return request;
+		} catch (e) {
+			notifyWith("comment submission failed. make sure to fill in the field", "error");
+		}
+	};
+
 	const userMatch = useMatch("/users/:id");
 	const userData = users.find((user) => user.id === userMatch?.params?.id) ?? null;
 
 	const blogMatch = useMatch("/blogs/:id");
 	const blogData = blogs.find((blog) => blog.id === blogMatch?.params?.id) ?? null;
+
+	const commentMatch = useMatch("/blogs/:id");
+	const [commentsData, setCommentsData] = useState(null);
+
+	useEffect(() => {
+		if (commentMatch) {
+			commentsService
+				.getAll(commentMatch.params.id)
+				.then((data) => setCommentsData(data))
+				.catch((error) => console.log(error));
+		} else {
+			setCommentsData(null);
+		}
+	}, [commentMatch]);
 
 	if (!userDataLoaded) {
 		return <div>loading user data...</div>;
@@ -147,6 +159,9 @@ const App = () => {
 					element={
 						<BlogView
 							blog={blogData}
+							comments={commentsData}
+							setComments={setCommentsData}
+							addComment={addComment}
 							like={() => like(blogData)}
 							canRemove={user && blogData?.user?.username === user?.username}
 							remove={() => remove(blogData)}
