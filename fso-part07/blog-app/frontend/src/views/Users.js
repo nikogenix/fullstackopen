@@ -1,4 +1,5 @@
 import User from "../components/User";
+import Table from "react-bootstrap/Table";
 
 const UsersView = ({ users }) => {
 	if (!users) {
@@ -7,8 +8,8 @@ const UsersView = ({ users }) => {
 
 	return (
 		<div>
-			<h2>users</h2>
-			<table>
+			<h2 style={{ fontSize: 26 }}>users</h2>
+			<Table striped hover>
 				<thead>
 					<tr>
 						<th>name</th>
@@ -20,7 +21,7 @@ const UsersView = ({ users }) => {
 						<User key={user.id} userId={user.id} name={user.name} blogCount={user.blogs.length} />
 					))}
 				</tbody>
-			</table>
+			</Table>
 		</div>
 	);
 };

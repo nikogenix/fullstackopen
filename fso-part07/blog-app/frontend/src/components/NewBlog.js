@@ -1,5 +1,9 @@
 import { useState } from "react";
 
+import Button from "react-bootstrap/Button";
+import FloatingLabel from "react-bootstrap/FloatingLabel";
+import Form from "react-bootstrap/Form";
+
 const BlogForm = ({ createBlog }) => {
 	const [title, setTitle] = useState("");
 	const [author, setAuthor] = useState("");
@@ -11,34 +15,40 @@ const BlogForm = ({ createBlog }) => {
 	};
 
 	return (
-		<div>
-			<h4>Create a new blog</h4>
+		<div style={{ margin: "10px 20px" }}>
+			<h4>create a new blog</h4>
 
-			<form onSubmit={handleSubmit}>
-				<div>
-					title
-					<input
-						id="title"
-						placeholder="title"
-						value={title}
-						onChange={({ target }) => setTitle(target.value)}
-					/>
-				</div>
-				<div>
-					author
-					<input
-						id="author"
-						placeholder="author"
-						value={author}
-						onChange={({ target }) => setAuthor(target.value)}
-					/>
-				</div>
-				<div>
-					url
-					<input id="url" placeholder="url" value={url} onChange={({ target }) => setUrl(target.value)} />
-				</div>
-				<button type="submit">create</button>
-			</form>
+			<Form onSubmit={handleSubmit} style={{ width: "70vw", maxWidth: 500 }}>
+				<Form.Group>
+					<FloatingLabel className="mb-3" label="title" controlId="title">
+						<Form.Control
+							placeholder="title"
+							value={title}
+							onChange={({ target }) => setTitle(target.value)}
+						/>
+					</FloatingLabel>
+				</Form.Group>
+
+				<Form.Group>
+					<FloatingLabel className="mb-3" label="author" controlId="author">
+						<Form.Control
+							placeholder="author"
+							value={author}
+							onChange={({ target }) => setAuthor(target.value)}
+						/>
+					</FloatingLabel>
+				</Form.Group>
+
+				<Form.Group>
+					<FloatingLabel className="mb-3" label="url" controlId="url">
+						<Form.Control placeholder="url" value={url} onChange={({ target }) => setUrl(target.value)} />
+					</FloatingLabel>
+				</Form.Group>
+
+				<Button variant="primary" type="submit">
+					create
+				</Button>
+			</Form>
 		</div>
 	);
 };

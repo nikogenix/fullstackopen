@@ -14,6 +14,9 @@ import BlogsView from "./views/Blogs";
 import LoginView from "./views/Login";
 
 import Notification from "./components/Notification";
+import Nav from "react-bootstrap/Nav";
+import { LinkContainer } from "react-router-bootstrap";
+import Button from "react-bootstrap/Button";
 
 import { useSelector, useDispatch } from "react-redux";
 import { setNotification } from "./reducers/notificationReducer";
@@ -134,22 +137,37 @@ const App = () => {
 	}, [commentMatch]);
 
 	if (!userDataLoaded) {
-		return <div>loading user data...</div>;
+		return <div className="container">loading user data...</div>;
 	}
 
 	return (
-		<div>
-			<nav>
-				<Link to="/blogs">blogs</Link>
-				<Link to="/users"> users</Link>
-				{user ? (
-					<em>
-						{user.name} logged in <button onClick={logout}>logout</button>
-					</em>
-				) : (
-					<Link to="/login">login</Link>
-				)}
-			</nav>
+		<div className="container">
+			<Nav fill variant="tabs">
+				<Nav.Item>
+					<LinkContainer to="/blogs">
+						<Nav.Link>blogs</Nav.Link>
+					</LinkContainer>
+				</Nav.Item>
+				<Nav.Item>
+					<LinkContainer to="/users">
+						<Nav.Link>users</Nav.Link>
+					</LinkContainer>
+				</Nav.Item>
+				<Nav.Item>
+					{user ? (
+						<em>
+							{user.name} logged in{" "}
+							<Button style={{ margin: " 0 " }} onClick={logout}>
+								logout
+							</Button>
+						</em>
+					) : (
+						<LinkContainer to="/login">
+							<Nav.Link>login</Nav.Link>
+						</LinkContainer>
+					)}
+				</Nav.Item>
+			</Nav>
 
 			<Notification info={notification} />
 
@@ -189,7 +207,7 @@ const App = () => {
 				<Route path="/login" element={<LoginView login={login} />} />
 				<Route path="/" element={<Navigate replace to="/blogs" />} />
 			</Routes>
-			<footer>blog app | 2023 </footer>
+			<footer style={{ paddingTop: "20px", textAlign: "center" }}>blog app | 2023 </footer>
 		</div>
 	);
 };
