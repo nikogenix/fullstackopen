@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+import { Button, Card, CardContent, TextField, Typography } from "@mui/material";
+
 const BlogView = ({ blog, comments, setComments, addComment, like, canRemove, remove }) => {
 	const [comment, setComment] = useState("");
 
@@ -17,40 +19,48 @@ const BlogView = ({ blog, comments, setComments, addComment, like, canRemove, re
 
 	if (blog === null) return <div>no blog found</div>;
 	return (
-		<div>
-			<h3>{blog.title}</h3> {canRemove && <button onClick={remove}>delete</button>}
-			<p>written by {blog.author}</p>
-			<p>
-				<a href={blog.url}> {blog.url}</a>
-			</p>
-			<p>
-				liked by {blog.likes} <button onClick={like}>like</button>
-			</p>
-			<p>added by {blog.user.name}</p>
-			<h4>comments</h4>
-			<form onSubmit={handleSubmit}>
-				<div>
-					<input
-						id="comment"
-						placeholder="comment"
-						value={comment}
-						onChange={({ target }) => setComment(target.value)}
-					/>
-				</div>
-				<button type="submit">add comment</button>
-			</form>
-			{comments === null ? (
-				<p>loading...</p>
-			) : comments.length === 0 ? (
-				<p>no comments yet</p>
-			) : (
-				<ul>
-					{comments.map((comment) => (
-						<li key={comment.id}>{comment.message}</li>
-					))}
-				</ul>
-			)}
-		</div>
+		<Card>
+			<CardContent>
+				<Typography variant="h5" style={{ display: "inline-block" }}>
+					{blog.title}
+				</Typography>{" "}
+				{canRemove && (
+					<Button style={{ display: "inline-block" }} onClick={remove}>
+						delete
+					</Button>
+				)}
+				<p>written by {blog.author}</p>
+				<p>
+					<a href={blog.url}> {blog.url}</a>
+				</p>
+				<p>
+					liked by {blog.likes} <Button onClick={like}>like</Button>
+				</p>
+				<p>added by {blog.user.name}</p>
+				<h4>comments</h4>
+				<form onSubmit={handleSubmit}>
+					<div>
+						<TextField
+							label="comment"
+							value={comment}
+							onChange={({ target }) => setComment(target.value)}
+						/>
+					</div>
+					<Button type="submit">add comment</Button>
+				</form>
+				{comments === null ? (
+					<p>loading...</p>
+				) : comments.length === 0 ? (
+					<p>no comments yet</p>
+				) : (
+					<ul>
+						{comments.map((comment) => (
+							<li key={comment.id}>{comment.message}</li>
+						))}
+					</ul>
+				)}
+			</CardContent>
+		</Card>
 	);
 };
 

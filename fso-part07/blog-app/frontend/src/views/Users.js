@@ -1,3 +1,4 @@
+import { TableContainer, TableHead, TableRow, TableCell, TableBody } from "@mui/material";
 import User from "../components/User";
 
 const UsersView = ({ users }) => {
@@ -8,19 +9,19 @@ const UsersView = ({ users }) => {
 	return (
 		<div>
 			<h2>users</h2>
-			<table>
-				<thead>
-					<tr>
-						<th>name</th>
-						<th>blogs created</th>
-					</tr>
-				</thead>
-				<tbody>
+			<TableContainer>
+				<TableHead>
+					<TableRow>
+						<TableCell>name</TableCell>
+						<TableCell>blogs created</TableCell>
+					</TableRow>
+				</TableHead>
+				<TableBody>
 					{users.map((user) => (
 						<User key={user.id} userId={user.id} name={user.name} blogCount={user.blogs.length} />
 					))}
-				</tbody>
-			</table>
+				</TableBody>
+			</TableContainer>
 		</div>
 	);
 };

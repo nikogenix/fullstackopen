@@ -13,6 +13,7 @@ import BlogView from "./views/Blog";
 import BlogsView from "./views/Blogs";
 import LoginView from "./views/Login";
 
+import { AppBar, Button, Container, Toolbar } from "@mui/material";
 import Notification from "./components/Notification";
 
 import { useSelector, useDispatch } from "react-redux";
@@ -138,18 +139,34 @@ const App = () => {
 	}
 
 	return (
-		<div>
-			<nav>
-				<Link to="/blogs">blogs</Link>
-				<Link to="/users"> users</Link>
-				{user ? (
-					<em>
-						{user.name} logged in <button onClick={logout}>logout</button>
-					</em>
-				) : (
-					<Link to="/login">login</Link>
-				)}
-			</nav>
+		<Container>
+			<AppBar position="static">
+				<Toolbar>
+					<Button color="inherit" component={Link} to="/blogs">
+						blogs
+					</Button>
+					<Button color="inherit" component={Link} to="/users">
+						users
+					</Button>
+
+					{user ? (
+						<div style={{ display: "flex", justifyContent: "flex-end", width: "100%" }}>
+							<em>
+								{user.name} logged in{" "}
+								<Button color="inherit" onClick={logout}>
+									logout
+								</Button>
+							</em>
+						</div>
+					) : (
+						<div style={{ display: "flex", justifyContent: "flex-end", width: "100%" }}>
+							<Button color="inherit" component={Link} to="/login">
+								login
+							</Button>
+						</div>
+					)}
+				</Toolbar>
+			</AppBar>
 
 			<Notification info={notification} />
 
@@ -190,7 +207,7 @@ const App = () => {
 				<Route path="/" element={<Navigate replace to="/blogs" />} />
 			</Routes>
 			<footer>blog app | 2023 </footer>
-		</div>
+		</Container>
 	);
 };
 

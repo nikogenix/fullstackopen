@@ -1,3 +1,4 @@
+import { Button, TextField } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -16,21 +17,19 @@ const LoginForm = ({ login }) => {
 	return (
 		<form onSubmit={handleSubmit}>
 			<div>
-				username
-				<input id="username" value={username} onChange={({ target }) => setUsername(target.value)} />
+				<TextField label="username" value={username} onChange={({ target }) => setUsername(target.value)} />
 			</div>
 			<div>
-				password
-				<input
-					id="password"
+				<TextField
+					label="password"
 					type="password"
 					value={password}
 					onChange={({ target }) => setPassword(target.value)}
 				/>
 			</div>
-			<button id="login-button" type="submit">
+			<Button id="login-button" type="submit">
 				login
-			</button>
+			</Button>
 		</form>
 	);
 };
