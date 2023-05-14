@@ -13,7 +13,18 @@ const NewBook = ({ show, setError }) => {
 	const [addBook] = useMutation(ADD_BOOK, {
 		refetchQueries: [{ query: ALL_BOOKS }, { query: ALL_AUTHORS }],
 		onError: (error) => {
-			console.log(error);
+			if (error?.graphQLErrors[0]?.message) {
+				setError(error?.graphQLErrors[0]?.message);
+			} else {
+				console.log(error);
+			}
+		},
+		onCompleted: () => {
+			setTitle("");
+			setPublished("");
+			setAuthor("");
+			setGenres([]);
+			setGenre("");
 		},
 	});
 
@@ -25,12 +36,6 @@ const NewBook = ({ show, setError }) => {
 		event.preventDefault();
 
 		addBook({ variables: { title, author, published: Number(published), genres } });
-
-		setTitle("");
-		setPublished("");
-		setAuthor("");
-		setGenres([]);
-		setGenre("");
 	};
 
 	const addGenre = () => {
@@ -43,15 +48,20 @@ const NewBook = ({ show, setError }) => {
 			<form onSubmit={submit}>
 				<div>
 					title
-					<input value={title} onChange={({ target }) => setTitle(target.value)} />
+					<input required value={title} onChange={({ target }) => setTitle(target.value)} />
 				</div>
 				<div>
 					author
-					<input value={author} onChange={({ target }) => setAuthor(target.value)} />
+					<input required value={author} onChange={({ target }) => setAuthor(target.value)} />
 				</div>
 				<div>
 					published
-					<input type="number" value={published} onChange={({ target }) => setPublished(target.value)} />
+					<input
+						required
+						type="number"
+						value={published}
+						onChange={({ target }) => setPublished(target.value)}
+					/>
 				</div>
 				<div>
 					<input value={genre} onChange={({ target }) => setGenre(target.value)} />
