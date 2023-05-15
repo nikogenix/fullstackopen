@@ -7,16 +7,19 @@ import NewBook from "./components/NewBook";
 import Notification from "./components/Notification";
 import LoginForm from "./components/LoginForm";
 
-import { ALL_AUTHORS, ALL_BOOKS, USER_INFO } from "./queries";
+import { ALL_AUTHORS, USER_INFO, FILTERED_BOOKS } from "./queries";
 import Recommended from "./components/Recommended";
 
 const App = () => {
-	const [token, setToken] = useState(null);
+	const [token, setToken] = useState(
+		localStorage.getItem("library-user-token") ? localStorage.getItem("library-user-token") : null
+	);
 	const [page, setPage] = useState("authors");
 	const [errorMessage, setErrorMessage] = useState(null);
 
 	const authors = useQuery(ALL_AUTHORS);
-	const books = useQuery(ALL_BOOKS);
+	const [genre, setGenre] = useState("all");
+	const books = useQuery(FILTERED_BOOKS, { variables: { genre: genre === "all" ? null : genre } });
 	const user = useQuery(USER_INFO);
 	const client = useApolloClient();
 
@@ -46,7 +49,7 @@ const App = () => {
 
 				<Authors show={page === "authors"} authors={authors} />
 
-				<Books show={page === "books"} books={books} />
+				<Books show={page === "books"} books={books} genre={genre} setGenre={setGenre} />
 
 				<NewBook show={page === "add"} setError={notify} />
 
@@ -69,11 +72,11 @@ const App = () => {
 
 			<Authors show={page === "authors"} authors={authors} />
 
-			<Books show={page === "books"} books={books} />
+			<Books show={page === "books"} books={books} genre={genre} setGenre={setGenre} />
 
-			<Recommended show={page === "recommended"} books={books} user={user} />
+			<Recommended show={page === "recommended"} user={user} />
 
-			<NewBook show={page === "add"} setError={notify} />
+			<NewBook show={page === "add"} setError={notify} user={user} selectedGenre={genre} />
 		</div>
 	);
 };

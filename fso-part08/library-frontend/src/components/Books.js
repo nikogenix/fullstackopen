@@ -1,21 +1,25 @@
 import { useEffect, useState } from "react";
 
-const Books = ({ show, books }) => {
-	const [genre, setGenre] = useState("all");
+const Books = ({ show, books, genre, setGenre }) => {
 	let [genres, setGenres] = useState(["all"]);
 
 	useEffect(() => {
-		const newGenres = ["all"];
-
-		if (!books.loading && books.data.allBooks) {
+		if (!books.loading && books.data.allBooks && genre === "all") {
+			const newGenres = ["all"];
 			books.data.allBooks.forEach((b) => {
 				b.genres.forEach((g) => {
 					if (!newGenres.includes(g)) newGenres.push(g);
 				});
 			});
+			setGenres([...newGenres]);
 		}
-		setGenres([...newGenres]);
 	}, [books]);
+
+	const changeGenre = (e) => {
+		const selectedGenre = e.target.value;
+		setGenre(selectedGenre);
+		books.refetch({ genre: selectedGenre === "all" ? null : selectedGenre });
+	};
 
 	if (!show) {
 		return null;
@@ -34,7 +38,7 @@ const Books = ({ show, books }) => {
 					<tr>
 						<th>
 							<label htmlFor="genres">genre:</label>
-							<select name="genres" id="genres" onChange={(e) => setGenre(e.target.value)}>
+							<select defaultValue={genre} name="genres" id="genres" onChange={changeGenre}>
 								{genres.map((g) => (
 									<option key={g} value={g}>
 										{g}
@@ -45,15 +49,13 @@ const Books = ({ show, books }) => {
 						<th>author</th>
 						<th>published</th>
 					</tr>
-					{books.data.allBooks
-						.filter((b) => (genre === "all" ? b : b.genres.includes(genre)))
-						.map((b) => (
-							<tr key={b.title}>
-								<td>{b.title}</td>
-								<td>{b.author.name}</td>
-								<td>{b.published}</td>
-							</tr>
-						))}
+					{books.data.allBooks.map((b) => (
+						<tr key={b.title}>
+							<td>{b.title}</td>
+							<td>{b.author.name}</td>
+							<td>{b.published}</td>
+						</tr>
+					))}
 				</tbody>
 			</table>
 		</div>

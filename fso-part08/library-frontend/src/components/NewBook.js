@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useMutation } from "@apollo/client";
 
-import { ADD_BOOK, ALL_BOOKS, ALL_AUTHORS } from "../queries";
+import { ADD_BOOK, ALL_AUTHORS, FILTERED_BOOKS } from "../queries";
 
-const NewBook = ({ show, setError }) => {
+const NewBook = ({ show, setError, user, selectedGenre }) => {
 	const [title, setTitle] = useState("");
 	const [author, setAuthor] = useState("");
 	const [published, setPublished] = useState("");
@@ -11,7 +11,7 @@ const NewBook = ({ show, setError }) => {
 	const [genres, setGenres] = useState([]);
 
 	const [addBook] = useMutation(ADD_BOOK, {
-		refetchQueries: [{ query: ALL_BOOKS }, { query: ALL_AUTHORS }],
+		refetchQueries: [{ query: ALL_AUTHORS }],
 		onError: (error) => {
 			if (error?.graphQLErrors[0]?.message) {
 				setError(error?.graphQLErrors[0]?.message);
@@ -25,6 +25,32 @@ const NewBook = ({ show, setError }) => {
 			setAuthor("");
 			setGenres([]);
 			setGenre("");
+		},
+		update: (cache, response) => {
+			cache.updateQuery({ query: FILTERED_BOOKS, variables: { genre: selectedGenre } }, (data) => {
+				if (data) {
+					return {
+						...data,
+						allBooks: data.allBooks.concat(response.data.addBook),
+					};
+				}
+				return data;
+			});
+
+			if (selectedGenre !== user.data.me.favoriteGenre) {
+				cache.updateQuery(
+					{ query: FILTERED_BOOKS, variables: { genre: user.data.me.favoriteGenre } },
+					(data) => {
+						if (data) {
+							return {
+								...data,
+								allBooks: data.allBooks.concat(response.data.addBook),
+							};
+						}
+						return data;
+					}
+				);
+			}
 		},
 	});
 
