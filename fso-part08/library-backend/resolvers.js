@@ -10,33 +10,25 @@ const User = require("./models/User");
 
 const resolvers = {
 	Query: {
-		bookCount: async () => Book.collection.countDocuments(),
 		allBooks: async (root, args) => {
 			if (!args.author && !args.genre) return Book.find({}).populate("author");
 			else if (args.author && !args.genre) {
-				const author = await Author.findOne({ name: args.author });
+				const author = await Author.findOne({ name: args.author }).populate("bookCount");
 				const books = await Book.find({ author: author._id }).populate("author");
 				return books;
 			} else if (!args.author && args.genre) {
 				const books = await Book.find({ genres: args.genre }).populate("author");
 				return books;
 			} else if (args.author && args.genre) {
-				const author = await Author.findOne({ name: args.author });
+				const author = await Author.findOne({ name: args.author }).populate("bookCount");
 				const books = await Book.find({ author: author._id, genres: args.genre }).populate("author");
 				return books;
 			}
 		},
 		authorCount: async () => Author.collection.countDocuments(),
-		allAuthors: async () => Author.find({}),
+		allAuthors: async () => Author.find({}).populate("bookCount"),
 		me: (root, args, context) => {
 			return context.currentUser;
-		},
-	},
-	Author: {
-		bookCount: async (root) => {
-			const author = await Author.findOne({ name: root.name });
-			const books = await Book.find({ author: author._id });
-			return books.length;
 		},
 	},
 	Mutation: {
@@ -50,7 +42,7 @@ const resolvers = {
 				});
 			}
 
-			const author = await Author.findOne({ name: args.author });
+			const author = await Author.findOne({ name: args.author }).populate("bookCount");
 			if (author) {
 				const book = new Book({ ...args, author: author._id });
 				try {
