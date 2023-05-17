@@ -36,7 +36,7 @@ interface Result {
  *            | [    training     ]
  *           goal
  */
-const calculateExercises = (training: number[], goal: number): Result => {
+export const calculateExercises = (training: number[], goal: number): Result => {
 	const periodLength = training.length,
 		trainingDays = training.filter((day) => day !== 0).length,
 		rating = Math.floor(Math.random() * 3) + 1,
@@ -56,13 +56,15 @@ const calculateExercises = (training: number[], goal: number): Result => {
 	};
 };
 
-try {
-	const { goal, training } = parseExercises(process.argv);
-	console.log(calculateExercises(training, goal));
-} catch (error: unknown) {
-	let errorMessage = "Something bad happened.";
-	if (error instanceof Error) {
-		errorMessage += " Error: " + error.message;
+if (require.main === module) {
+	try {
+		const { goal, training } = parseExercises(process.argv);
+		console.log(calculateExercises(training, goal));
+	} catch (error: unknown) {
+		let errorMessage = "Something bad happened.";
+		if (error instanceof Error) {
+			errorMessage += " Error: " + error.message;
+		}
+		console.log(errorMessage);
 	}
-	console.log(errorMessage);
 }

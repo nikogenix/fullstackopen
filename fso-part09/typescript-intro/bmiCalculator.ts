@@ -22,26 +22,28 @@ type BMICategory = "underweight" | "normal range" | "overweight" | "obese";
 /**
  * @param h - height in cm
  * @param w - weight in kg
- * @returns - BMI category
+ * @returns BMI category
  * @examples - 180, 74 => normal range
  * 			 - 180, 91 => overweight
  */
-const bmiCalculator = (h: number, w: number): BMICategory => {
+export const bmiCalculator = (h: number, w: number): BMICategory => {
 	const bmi = (w / h / h) * 10000;
 
 	if (bmi < 18.5) return "underweight";
 	else if (bmi >= 18.5 && bmi < 25) return "normal range";
 	else if (bmi >= 25 && bmi < 30) return "overweight";
-	else if (bmi >= 30) return "obese";
+	else return "obese";
 };
 
-try {
-	const { h, w } = parseBMI(process.argv);
-	console.log(bmiCalculator(h, w));
-} catch (error: unknown) {
-	let errorMessage = "Something bad happened.";
-	if (error instanceof Error) {
-		errorMessage += " Error: " + error.message;
+if (require.main === module) {
+	try {
+		const { h, w } = parseBMI(process.argv);
+		console.log(bmiCalculator(h, w));
+	} catch (error: unknown) {
+		let errorMessage = "Something bad happened.";
+		if (error instanceof Error) {
+			errorMessage += " Error: " + error.message;
+		}
+		console.log(errorMessage);
 	}
-	console.log(errorMessage);
 }
