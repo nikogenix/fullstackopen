@@ -1,5 +1,6 @@
 import patientsData from "../../data/patients";
-import { Patient, RedactedPatient } from "../types";
+import { NewPatient, Patient, RedactedPatient } from "../types";
+import { v1 as uuid } from "uuid";
 
 const patients: Patient[] = patientsData;
 
@@ -17,7 +18,22 @@ const getRedactedPatients = (): RedactedPatient[] => {
 	}));
 };
 
-const addPatient = () => null;
+const addPatient = (newPatient: NewPatient): RedactedPatient => {
+	const patient: Patient = {
+		id: (uuid as () => string)(),
+		...newPatient,
+	};
+	patients.push(patient);
+
+	const redactedPatient: RedactedPatient = {
+		id: patient.id,
+		name: patient.name,
+		dateOfBirth: patient.dateOfBirth,
+		gender: patient.gender,
+		occupation: patient.occupation,
+	};
+	return redactedPatient;
+};
 
 export default {
 	getPatients,
