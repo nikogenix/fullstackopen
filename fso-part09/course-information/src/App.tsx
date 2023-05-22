@@ -1,5 +1,10 @@
+import Content from "./components/Content";
+import Header from "./components/Header";
+import Total from "./components/Total";
+
 const App = () => {
 	const courseName = "Half Stack application development";
+
 	const courseParts = [
 		{
 			name: "Fundamentals",
@@ -14,6 +19,16 @@ const App = () => {
 			exerciseCount: 14,
 		},
 	];
+
+	const totalCount = courseParts.reduce((carry, part) => carry + part.exerciseCount, 0);
+
+	return (
+		<div>
+			<Header name={courseName} />
+			<Content parts={courseParts} />
+			<Total count={totalCount} />
+		</div>
+	);
 
 	return (
 		<div>
