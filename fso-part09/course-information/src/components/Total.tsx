@@ -1,8 +1,6 @@
-interface Props {
-	count: number;
-}
+import { TotalProps } from "../types";
 
-const Total = ({ count }: Props) => {
+const Total = ({ count }: TotalProps) => {
 	return <p>Number of exercises: {count}</p>;
 };
 

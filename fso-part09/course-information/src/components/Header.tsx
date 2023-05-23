@@ -1,8 +1,6 @@
-interface Props {
-	name: string;
-}
+import { HeaderProps } from "../types";
 
-const Header = ({ name }: Props) => {
+const Header = ({ name }: HeaderProps) => {
 	return <h1>{name}</h1>;
 };
 
