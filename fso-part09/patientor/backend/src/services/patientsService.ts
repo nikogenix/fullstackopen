@@ -18,6 +18,10 @@ const getRedactedPatients = (): RedactedPatient[] => {
 	}));
 };
 
+const getPatient = (id: string): Patient | undefined => {
+	return patients.find((p) => p.id === id);
+};
+
 const addPatient = (newPatient: NewPatient): RedactedPatient => {
 	const patient: Patient = {
 		id: (uuid as () => string)(),
@@ -38,5 +42,6 @@ const addPatient = (newPatient: NewPatient): RedactedPatient => {
 export default {
 	getPatients,
 	getRedactedPatients,
+	getPatient,
 	addPatient,
 };
