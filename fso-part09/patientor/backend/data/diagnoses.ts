@@ -18,8 +18,8 @@ const data: Diagnosis[] = [
 	},
 	{
 		code: "J10.1",
-		name: "Influenza with other respiratory manifestations, other influenza virus codeentified",
-		latin: "Influenza cum aliis manifestationibus respiratoriis ab agente virali codeentificato",
+		name: "Influenza with other respiratory manifestations, other influenza virus co-identified",
+		latin: "Influenza cum aliis manifestationibus respiratoriis ab agente virali co-identificato",
 	},
 	{
 		code: "J06.9",
