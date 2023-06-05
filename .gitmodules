@@ -4,3 +4,6 @@
 [submodule "fso-part10"]
 	path = fso-part10
 	url = https://github.com/nikogenix/fso-part10
+[submodule "fso-part11"]
+	path = fso-part11
+	url = https://github.com/nikogenix/fso-part11.git
